@@ -43,5 +43,3 @@ jobs:
         run: |
           sfdx force:org:list
           sfdx force:org:display
-        run: |
-          sfdx
