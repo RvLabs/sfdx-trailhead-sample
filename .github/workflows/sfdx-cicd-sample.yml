@@ -33,3 +33,15 @@ jobs:
           tar xJf sfdx-linux-amd64.tar.xz -C sfdx-cli --strip-components 1
           ./sfdx-cli/install
           sfdx --version
+
+      - name: SFDX Login
+        run: |
+          sfdx force:auth:jwt:grant --clientid ${{ secrets.SFDX_CONSUMER_KEY }}  --jwtkeyfile ${{ secrets.SFDX_JWT_KEY }} --username ${{ secrets.SFDX_HUB_USERNAME }} --setdefaultdevhubusername
+          sfdx config:set defaultdevhubusername=DevHub --global
+          
+      - name: SFDX Display and List
+        run: |
+          sfdx force:org:list
+          sfdx force:org:display
+        run: |
+          sfdx
