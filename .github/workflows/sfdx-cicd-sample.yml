@@ -30,6 +30,6 @@ jobs:
         run: |
           wget https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
           mkdir sfdx-cli
-          tar xJF sfdx-linux-amd64.tar.xz -C sfdx-cli --strip-components 1
+          tar xJf sfdx-linux-amd64.tar.xz -C sfdx-cli --strip-components 1
           ./sfdx-cli/install
           sfdx --version
