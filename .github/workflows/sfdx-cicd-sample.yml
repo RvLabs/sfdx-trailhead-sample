@@ -65,7 +65,6 @@ jobs:
       - name: SFDX Login
         run: |
           sfdx force:auth:jwt:grant --clientid ${{ secrets.SFDX_CONSUMER_KEY }} --jwtkeyfile ${{ env.SFDX_KEY_DIR }}/${{ env.DECODED_KEY }} --username ${{ secrets.SFDX_HUB_USERNAME }} --setdefaultdevhubusername
-          sfdx config:set defaultdevhubusername=DevHub --global
           
       - name: SFDX Display and List
         run: |
