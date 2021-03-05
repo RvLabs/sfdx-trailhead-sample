@@ -19,25 +19,52 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    
+    env:
+      SFDX_KEY_DIR: sfdx-key
+      KEY_VAULT: kv-rvlabs
+      KV_CERT: sfappcert
+      CERT: cert.pfx
+      DECODED_CERT: decoded.pfx
+      DECODED_PEM: decoded.pem
+      DECODED_KEY: decoded.key
+      SFDX_CLI_DIR: sfdx-cli
+      
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.SFDX_AZ_CREDS }}
+      
+      - name: Get cert
+        run: |
+          echo "Base path: " $(pwd)
+          mkdir ${{ env.SFDX_KEY_DIR }} && cd ${{ env.SFDX_KEY_DIR }}
+          echo "SFDX key path: " $(pwd)
+          az keyvault secret download --vault-name ${{ env.KEY_VAULT }} -n ${{ env.KV_CERT }} -f ${{ env.CERT }}
+          cat ${{ env.CERT }} | base64 -d > ${{ env.DECODED_CERT }}
+          openssl pkcs12 -in ${{ env.DECODED_CERT }} -nocerts -nodes -out ${{ env.DECODED_PEM }} -passin pass:
+          openssl rsa -in ${{ env.DECODED_PEM }} -out ${{ env.DECODED_KEY }}
+          ls -l
+
       # Download and install SFDX CLI
       - name: Get SFDX CLI
         run: |
+          echo "Base path: " $(pwd)
           wget https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
-          mkdir sfdx-cli
-          tar xJf sfdx-linux-amd64.tar.xz -C sfdx-cli --strip-components 1
-          ./sfdx-cli/install
+          mkdir ${{ env.SFDX_CLI_DIR }}
+          tar xJf sfdx-linux-amd64.tar.xz -C ${{ env.SFDX_CLI_DIR }} --strip-components 1
+          ./${{ env.SFDX_CLI_DIR }}/install
           sfdx --version
 
       - name: SFDX Login
         run: |
-          sfdx force:auth:jwt:grant --clientid ${{ secrets.SFDX_CONSUMER_KEY }}  --jwtkeyfile ${{ secrets.SFDX_JWT_KEY }} --username ${{ secrets.SFDX_HUB_USERNAME }} --setdefaultdevhubusername
-          sfdx config:set defaultdevhubusername=DevHub --global
+          sfdx force:auth:jwt:grant --clientid ${{ secrets.SFDX_CONSUMER_KEY }} --jwtkeyfile ${{ env.SFDX_KEY_DIR }}/${{ env.DECODED_KEY }} --username ${{ secrets.SFDX_HUB_USERNAME }} --setdefaultdevhubusername
           
       - name: SFDX Display and List
         run: |
