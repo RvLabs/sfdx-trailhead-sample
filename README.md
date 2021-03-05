@@ -83,15 +83,15 @@ Salesforce DX CLI uses JWT Auth flow and the CLI requires the path and name for 
 4. Extracts the RSA key
 
 ```yaml
-      - name: Get cert
-        run: |
-          echo "Base path: " $(pwd)
-          mkdir ${{ env.SFDX_KEY_DIR }} && cd ${{ env.SFDX_KEY_DIR }}
-          echo "SFDX key path: " $(pwd)
-          az keyvault secret download --vault-name ${{ env.KEY_VAULT }} -n ${{ env.KV_CERT }} -f ${{ env.CERT }}
-          cat ${{ env.CERT }} | base64 -d > ${{ env.DECODED_CERT }}
-          openssl pkcs12 -in ${{ env.DECODED_CERT }} -nocerts -nodes -out ${{ env.DECODED_PEM }} -passin pass:
-          openssl rsa -in ${{ env.DECODED_PEM }} -out ${{ env.DECODED_KEY }}
+  - name: Get cert
+    run: |
+      echo "Base path: " $(pwd)
+      mkdir ${{ env.SFDX_KEY_DIR }} && cd ${{ env.SFDX_KEY_DIR }}
+      echo "SFDX key path: " $(pwd)
+      az keyvault secret download --vault-name ${{ env.KEY_VAULT }} -n ${{ env.KV_CERT }} -f ${{ env.CERT }}
+      cat ${{ env.CERT }} | base64 -d > ${{ env.DECODED_CERT }}
+      openssl pkcs12 -in ${{ env.DECODED_CERT }} -nocerts -nodes -out ${{ env.DECODED_PEM }} -passin pass:
+      openssl rsa -in ${{ env.DECODED_PEM }} -out ${{ env.DECODED_KEY }}
 ```
 
 ### Preparing Salesforce DX environment
@@ -99,14 +99,14 @@ Salesforce DX CLI uses JWT Auth flow and the CLI requires the path and name for 
 Salesforce DX uses its CLI and **force** topic to provide tools for developers. The **Get SFDX CLI** downloads and installs the CLI directly from Salesforce.
 
 ```yaml
-      - name: Get SFDX CLI
-        run: |
-          echo "Base path: " $(pwd)
-          wget https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
-          mkdir ${{ env.SFDX_CLI_DIR }}
-          tar xJf sfdx-linux-amd64.tar.xz -C ${{ env.SFDX_CLI_DIR }} --strip-components 1
-          ./${{ env.SFDX_CLI_DIR }}/install
-          sfdx --version
+  - name: Get SFDX CLI
+    run: |
+      echo "Base path: " $(pwd)
+      wget https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
+      mkdir ${{ env.SFDX_CLI_DIR }}
+      tar xJf sfdx-linux-amd64.tar.xz -C ${{ env.SFDX_CLI_DIR }} --strip-components 1
+      ./${{ env.SFDX_CLI_DIR }}/install
+      sfdx --version
 ```
 
 ### Salesforce DX operations
@@ -114,12 +114,12 @@ Salesforce DX uses its CLI and **force** topic to provide tools for developers. 
 The following two steps perform the login and issues list and display to validate connection is successful
 
 ```yaml
-      - name: SFDX Login
-        run: |
-          sfdx force:auth:jwt:grant --clientid ${{ secrets.SFDX_CONSUMER_KEY }} --jwtkeyfile ${{ env.SFDX_KEY_DIR }}/${{ env.DECODED_KEY }} --username ${{ secrets.SFDX_HUB_USERNAME }} --setdefaultdevhubusername
-          
-      - name: SFDX Display and List
-        run: |
-          sfdx force:org:list
-          sfdx force:org:display
+  - name: SFDX Login
+    run: |
+      sfdx force:auth:jwt:grant --clientid ${{ secrets.SFDX_CONSUMER_KEY }} --jwtkeyfile ${{ env.SFDX_KEY_DIR }}/${{ env.DECODED_KEY }} --username ${{ secrets.SFDX_HUB_USERNAME }} --setdefaultdevhubusername
+
+  - name: SFDX Display and List
+    run: |
+      sfdx force:org:list
+      sfdx force:org:display
 ```
