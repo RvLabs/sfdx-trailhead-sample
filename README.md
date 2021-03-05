@@ -1,5 +1,7 @@
 # Salesforce DX CI/CD with GitHub Actions and Azure Key Vault
 
+This simple scenario shows how to leverage GitHub actions for adopting a CI/CD process for Salesforce development and it is heavily dependant on the **Prerequisites** in order for the continious integration and continious deployment. The GitHub workflow shows how to succcessfully provision the **SFDX CLI** to login and validate connection to the Salesforce org, which implicitaly allows you to use **force:source** topic to pull, and push your app as well as the **force:apex** topic for testing your app and the full range of topics and commands provided by the CLI.
+
 ## Prerequisites
 
 1. [Develop an app with Salesforce CLI and source control](https://trailhead.salesforce.com/content/learn/projects/develop-app-with-salesforce-cli-and-source-control)
