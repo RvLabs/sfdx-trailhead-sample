@@ -41,18 +41,16 @@ jobs:
         with:
           creds: ${{ secrets.SFDX_AZ_CREDS }}
       
-      - name: Azure CLI Action
-        uses: Azure/cli@1.0.4
-        with:
-          inlineScript: |
-            echo "Base path: " $(pwd)
-            mkdir ${{ env.SFDX_KEY_DIR }} && cd ${{ env.SFDX_KEY_DIR }}
-            echo "SFDX key path: " $(pwd)
-            az keyvault secret download --vault-name ${{ env.KEY_VAULT }} -n ${{ env.KV_CERT }} -f ${{ env.CERT }}
-            cat ${{ env.CERT }} | base64 -d > ${{ env.DECODED_CERT }}
-            openssl pkcs12 -in ${{ env.DECODED_CERT }} -nocerts -nodes -out ${{ env.DECODED_PEM }} -passin pass:
-            openssl rsa -in ${{ env.DECODED_PEM }} -out ${{ env.DECODED_KEY }}
-            ls -l
+      - name: Get cert
+        run: |
+          echo "Base path: " $(pwd)
+          mkdir ${{ env.SFDX_KEY_DIR }} && cd ${{ env.SFDX_KEY_DIR }}
+          echo "SFDX key path: " $(pwd)
+          az keyvault secret download --vault-name ${{ env.KEY_VAULT }} -n ${{ env.KV_CERT }} -f ${{ env.CERT }}
+          cat ${{ env.CERT }} | base64 -d > ${{ env.DECODED_CERT }}
+          openssl pkcs12 -in ${{ env.DECODED_CERT }} -nocerts -nodes -out ${{ env.DECODED_PEM }} -passin pass:
+          openssl rsa -in ${{ env.DECODED_PEM }} -out ${{ env.DECODED_KEY }}
+          ls -l
 
       # Download and install SFDX CLI
       - name: Get SFDX CLI
