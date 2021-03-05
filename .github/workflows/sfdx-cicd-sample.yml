@@ -50,7 +50,7 @@ jobs:
             echo "SFDX key path: " $(pwd)
             az keyvault secret download --vault-name ${{ env.KEY_VAULT }} -n ${{ env.KV_CERT }} -f ${{ env.CERT }}
             cat ${{ env.CERT }} | base64 -d > ${{ env.DECODED_CERT }}
-            openssl pkcs12 -in ${{ env.DECODED_CERT }} -nocerts -nodes -out ${{ env.DECODED_PEM }}
+            openssl pkcs12 -in ${{ env.DECODED_CERT }} -nocerts -nodes -out ${{ env.DECODED_PEM }} -passin pass:
             openssl rsa -in ${{ env.DECODED_PEM }} -out ${{ env.DECODED_KEY }}
             ls -l
 
